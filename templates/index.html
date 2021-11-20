@@ -80,12 +80,12 @@
         
         // Build color scale
         var myColor = d3.scaleLinear()
-          .range(["white", "#69b3a2"])
+          .range(["#ffffcc", "#800026"])
           .domain([1,100])
         
         //Read the data
         d3.csv("../static/sensor_data.csv", function(data) {
-        
+
           // create a tooltip
           var tooltip = d3.select("#my_dataviz")
             .append("div")
