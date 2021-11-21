@@ -40,14 +40,10 @@ def getTempData():
 
     xic, zic = zip(*cartesianList)
 
-    # print(cartesianList)
-
     di = rbfi(xic, yi, zic)   # interpolated values
 
     i = 0
     dataList = []
-
-    print(di)
 
     with open("static/sensor_data.json", "w", newline='') as f:
 

@@ -79,9 +79,10 @@
           .call(d3.axisLeft(y));
         
         // Build color scale
-        var myColor = d3.scaleLinear()
-          .range(["#ffffcc", "#800026"])
-          .domain([1,100])
+        var myColor = d3.scaleQuantize()
+          .domain([19,23])
+          .range(["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", 
+          "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#D53E4F", "#9E0142"]);
         
         //Read the data
         d3.json("../static/sensor_data.json", function(data) {
@@ -103,7 +104,7 @@
           }
           var mousemove = function(d) {
             tooltip
-              .html("The exact value of<br>this cell is: " + d.value)
+              .html("The exact value of<br>this cell is: " + d.val)
               .style("left", (d3.mouse(this)[0]+70) + "px")
               .style("top", (d3.mouse(this)[1]) + "px")
           }
@@ -115,14 +116,14 @@
           console.log(data);
 
           svg.selectAll()
-            .data(data, function(d) {return d.group+':'+d.variable;})
+            .data(data, function(d) {return d.x+','+d.z+':'+d.val;})
             .enter()
             .append("rect")
-              .attr("x", function(d) { return x(d.group) })
-              .attr("y", function(d) { return y(d.variable) })
+              .attr("x", function(d) { console.log(x(d.x)); return x(d.x) })
+              .attr("y", function(d) { console.log(y(d.z)); return y(d.z) })
               .attr("width", x.bandwidth() )
               .attr("height", y.bandwidth() )
-              .style("fill", function(d) { return myColor(d.value)} )
+              .style("fill", function(d) { return myColor(d.val)} )
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
             .on("mouseleave", mouseleave)
