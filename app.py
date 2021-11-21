@@ -8,6 +8,4 @@ app = Flask(__name__)
 def home():
     dataList = getTempData()
 
-    print(dataList)
-
     return render_template('index.html', data=dataList)

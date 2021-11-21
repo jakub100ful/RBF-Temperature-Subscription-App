@@ -1,7 +1,8 @@
 from scipy.interpolate import Rbf
 import numpy as np
 from pprint import pprint
-import csv
+import json
+import itertools
 
 
 def getTempData():
@@ -31,29 +32,31 @@ def getTempData():
     # coordinates to be interpolated / predicted
 
     i = 0
-    xi = []
-    yi = []
-    zi = []
+    xi = np.linspace(-n+1, n-1, a)
+    yi = np.linspace(0, 0, a**2)
+    zi = np.linspace(-n+1, n-1, a)
 
-    while i < a:
-        xi = np.append(xi, np.linspace(-n+1, n-1, a))
-        yi = np.append(yi, np.linspace(0, 0, a))
-        zi = np.append(zi, np.linspace(-n+1, n-1, a))
+    cartesianList = list(itertools.product(xi, zi))
 
-        i += 1
+    xic, zic = zip(*cartesianList)
 
-    di = rbfi(xi, yi, zi)   # interpolated values
+    # print(cartesianList)
+
+    di = rbfi(xic, yi, zic)   # interpolated values
 
     i = 0
+    dataList = []
 
-    with open("static/sensor_data.csv", "w", newline='') as f:
+    print(di)
 
-        writer = csv.writer(f)
+    with open("static/sensor_data.json", "w", newline='') as f:
 
         while i < a**2:
-            f.write("{},{},{}".format(xi[i], zi[i], di[i]))
-            f.write("\n")
+            interpolation = {'x': xic[i], 'z': zic[i], 'val': round(di[i], 2)}
+            dataList.append(interpolation)
 
             i += 1
+
+        json.dump(dataList, f)
 
     return di

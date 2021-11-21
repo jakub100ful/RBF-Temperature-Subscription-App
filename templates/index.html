@@ -84,7 +84,7 @@
           .domain([1,100])
         
         //Read the data
-        d3.csv("../static/sensor_data.csv", function(data) {
+        d3.json("../static/sensor_data.json", function(data) {
 
           // create a tooltip
           var tooltip = d3.select("#my_dataviz")
@@ -112,6 +112,8 @@
           }
         
           // add the squares
+          console.log(data);
+
           svg.selectAll()
             .data(data, function(d) {return d.group+':'+d.variable;})
             .enter()
