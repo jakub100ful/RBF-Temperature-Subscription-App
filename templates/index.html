@@ -19,6 +19,13 @@
     <div class="container">
         <h1>Temperature Map</h1>
 
+        <div>
+          <form action="{{ url_for('subscribe') }}" method="post">
+            <input type="text" name="coordList" id="selected-div"></input>
+            <button>Subscribe</button>
+          </form>
+        </div>
+
         <div id="my_dataviz"></div>
         
         <table class="table table-bordered">
@@ -44,6 +51,10 @@
     <script>
 
         // set the dimensions and margins of the graph
+
+        var selectedDiv = document.getElementById("selected-div");
+
+
         var margin = {top: 30, right: 30, bottom: 30, left: 30},
           width = 450 - margin.left - margin.right,
           height = 450 - margin.top - margin.bottom;
@@ -97,10 +108,56 @@
             .style("border-width", "2px")
             .style("border-radius", "5px")
             .style("padding", "5px")
+
+          var selectedSquaresList = []
         
           // Three function that change the tooltip when user hover / move / leave a cell
           var mouseover = function(d) {
             tooltip.style("opacity", 1)
+          }
+          var click = function(d) {
+
+            var listCopy = selectedSquaresList;
+            var index = 0;
+            var push = false;
+            var indexToRemove = []
+
+            if (listCopy.length != 0){
+              for (const square of listCopy){
+
+                if (d.x == square[0] && d.z == square[1]){
+                  indexToRemove.push(index)
+                  // remove from array
+                  push = false
+                  break;
+                }else {
+                  // add to array
+                  push = true;
+                }
+
+                index++
+              }
+            }else{
+              // add to array
+              push = true;
+            }
+
+            if (push){
+              listCopy.push([d.x,d.z])
+              d3.select(this)
+              .style("stroke", "black")
+              .style("stroke-width", "2px");
+            }else{
+              listCopy.splice(indexToRemove[0], 1);
+              d3.select(this)
+                  .style("stroke", "none")
+              indexToRemove = []
+            }
+
+            selectedSquaresList = listCopy
+
+            selectedDiv.value = selectedSquaresList
+
           }
           var mousemove = function(d) {
             tooltip
@@ -113,20 +170,20 @@
           }
         
           // add the squares
-          console.log(data);
 
           svg.selectAll()
             .data(data, function(d) {return d.x+','+d.z+':'+d.val;})
             .enter()
             .append("rect")
-              .attr("x", function(d) { console.log(x(d.x)); return x(d.x) })
-              .attr("y", function(d) { console.log(y(d.z)); return y(d.z) })
+              .attr("x", function(d) { return x(d.x) })
+              .attr("y", function(d) { return y(d.z) })
               .attr("width", x.bandwidth() )
               .attr("height", y.bandwidth() )
               .style("fill", function(d) { return myColor(d.val)} )
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
             .on("mouseleave", mouseleave)
+            .on("click", click)
         })
         
         </script>
